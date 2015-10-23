@@ -1,0 +1,35 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Описание {{ object.title }}
+{% endblock %}
+{% block cabinet_content %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <td>Артикул</td>
+            <td> --- </td>
+            <td>{{ object.article }}</td>
+        </tr>
+        <tr>
+            <td>Наименование</td>
+            <td> --- </td>
+            <td>{{ object.title }}</td>
+        </tr>
+        <tr>
+            <td>Количество</td>
+            <td> --- </td>
+            <td>{{ object.ps_parts.get.count }}</td>
+        </tr>
+        <tr>
+            <td>Стоимость</td>
+            <td> --- </td>
+            <td>{{ object.ps_parts.get.price }}</td>
+        </tr>
+        <tr>
+            <td>Тип</td>
+            <td> --- </td>
+            <td>{{ object.ps_parts.get.get_type_display }}</td>
+        </tr>
+    </thead>
+</table>
+{% endblock %}

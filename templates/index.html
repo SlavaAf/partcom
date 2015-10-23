@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block extra_head %}
+    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" style="padding-top: 50px">
+        <!-- Маркеры слайдов -->
+        <ol class="carousel-indicators">
+            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+        </ol>
+        <!-- Содержимое слайдов -->
+        <div class="carousel-inner">
+            <div class="item active">
+                <img src="{{ STATIC_URL }}img/engine-lg.jpg">
+                <div class="carousel-caption">
+                    <h3 class="text-right" >Широкий ассортимент</h3>
+                    <p style="width: 50%" class="pull-right">"ПартКом" предоставляет запчасти для автомобилей различного производства</p>
+                </div>
+            </div>
+
+            <div class="item">
+                <img src="{{ STATIC_URL }}img/delivery-lg.jpg">
+                <div class="carousel-caption" style="color: #000000">
+                    <h3 class="text-right" >Быстрая доставка</h3>
+                    <p style="width: 50%" class="pull-right">Осуществляется быстрая и удобная доставка автомобильных запчастей</p>
+                </div>
+            </div>
+
+            <div class="item" style="">
+                <img src="{{ STATIC_URL }}img/engine-lg.jpg">
+                <div class="carousel-caption">
+                    <h3 class="text-right">Удобство заказа</h3>
+                    <p style="width: 50%" class="pull-right">Вы можете оформить заказ в любое время и в любом месте, где доступен выход в интернет.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Controls -->
+        <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+        </a>
+        <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right"></span>
+        </a>
+    </div>
+{% endblock %}
+{% block content %}
+        <!-- Заголовок и текст -->
+    <div class="headline">
+        <h3 class="text-left modal-header">Интернет-магазин автозапчастей PartCom.kz</h3>
+    </div>
+    <div class="margin-bottom-30">
+        <p><strong>"ПартКом"</strong> - это проект, объединяющий поставщиков автомобильных запчастей города.</p>
+        <p>Посетителям нашего сайта мы предоставляем широкие возможности:</p>
+        <ul>
+            <li>Удобный выбор автозапчастей в круглосуточном режиме;</li>
+            <li>Консультация наших специалистов по подбору и наличию товара;</li>
+            <li>Легкое оформление заказа, различные способы оплаты и быстрая доставка по городу в удобное для вас время.</li>
+        </ul>
+    </div>
+        <!-- Содержимое блоков приемущества -->
+    <div class="row margin-bottom-30">
+      <div class="col-md-4">
+        <div class="service">
+            <img src="{{ STATIC_URL }}/img/home.png" class="pull-left img_block">
+          <div class="desc">
+            <h4>Удобство</h4>
+            <p>Заказ можно осуществить в любом месте в любое время. Главное - это наличие интернета под рукой.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service">
+            <img src="{{ STATIC_URL }}/img/speed.png" class="pull-left img_block">
+          <div class="desc">
+            <h4>Скорость</h4>
+            <p>Быстрая обработка заказов и быстрая доставка квалифицированными курьерами.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service">
+            <img src="{{ STATIC_URL }}/img/gears.png" class="pull-left img_block">
+          <div class="desc">
+            <h4>Ассортимент</h4>
+            <p>Здесь представлены все магазины нашего города, благодаря чему мы предлагаем широкий выбор автозапчастей.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+        <!-- Второй текст -->
+    <div class="headline">
+        <h3 class="text-left modal-header">Наши гарантии</h3>
+    </div>
+    <div class="row margin-bottom-30">
+        <p>Сотрудничая с интернет-магазином PartCom.kz, вам гарантируется, что:</p>
+        <ul>
+            <li>Вы получите доступ к постоянно обновляющимся каталогам запчастей для различных автомобилей;</li>
+            <li>Вы сможете выбрать и заказать автозапчасти в любое время суток;</li>
+            <li>Оплатить заказ любым удобным способом: наличными деньгами или по безналичному расчету;</li>
+            <li>В режиме реального времени вы сможете получать информацию о состоянии вашего заказа;</li>
+            <li>Вы сможете поделиться своим мнением и опытом с другими посетителями сайта в нашем специальном микроблоге.</li>
+        </ul>
+    </div>
+        <!-- Новые посты -->
+    <div class="headline">
+        <h3 class="text-left modal-header">Новые посты</h3>
+    </div>
+    {% load humanize %}
+    <div class="row margin-bottom-30">
+    {% for post in object_list %}
+        <div class="col-md-4">
+            <div class="service">
+                <p class="text-left">
+                    <a class="text-danger" href="{% url 'user_blog' post.author.pk %}">
+                        {{ post.author.get_fullname }}
+                    </a><br/>
+                    <small class="text-muted">{{ post.ts_created|naturaltime }}</small>
+                </p>
+                <h4><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h4>
+{#                <p>{{ post.content|safe|truncatewords_html:10 }}</p>#}
+                <a href="{{ post.get_absolute_url }}" class="text-info">
+                    &rarr;
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+        <!-- 3-й текст -->
+    <div class="row">
+        <p>
+           Стать нашим клиентом очень просто - нужно всего лишь <a href="{% url 'account_auth' %}" class="alert-warning">зарегистрироваться</a> на нашем сайте.
+        </p>
+    </div>
+{% endblock %}

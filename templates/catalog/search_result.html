@@ -1,0 +1,39 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Поиск
+{% endblock %}
+{% block cabinet_content %}
+{% if object_list %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Артикул</th>
+                <th>Наименование</th>
+                <th>Кол-во</th>
+                <th>Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+        <form method="post" action="">{% csrf_token %}
+            {% for object in object_list %}
+                <tr>
+                    <td>
+                        <button  name="PK" value="{{ object.pk }}" formmethod="post" type="submit" class="text-warning btn-link" formaction="{% url 'catalog_part_detail' object.part.slug %}">
+                            {{ object.part.article }}
+                        </button>
+                        <button class="btn btn-warning btn-xs pull-right" title="Добавить в корзину" onclick="add_to_cart_json(this, {{ object.pk }})">
+                            <span class="glyphicon glyphicon-shopping-cart"/>
+                        </button>
+                    </td>
+                    <td>{{ object.part.title }}</td>
+                    <td>{{ object.count }}</td>
+                    <td>{{ object.price }}</td>
+                </tr>
+            {% endfor %}
+        </form>
+        </tbody>
+    </table>
+{% else %}
+    <h3>Поиск не дал результатов</h3>
+{% endif %}
+{% endblock %}

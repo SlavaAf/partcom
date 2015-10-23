@@ -1,0 +1,41 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Мои запчасти
+{% endblock %}
+{% block cabinet_content %}
+{#<ul class="nav nav-pills">#}
+{#    {% csrf_token %}#}
+{#    <li class="active"><a href="{% url 'part_add' %}" data-toggle="tooltip" data-placement="right" title="Добавить деталь в каталог">Добавить запчасть</a></li>#}
+{#</ul>#}
+<h3 class="text-center">Список продаваемых магазином запчастей</h3>
+    <br/>
+<div class="panel panel-danger">
+    <table class="table table-hover">
+        <thead class="">
+            <tr class="panel">
+                <th>Артикул</th>
+                <th>Наименование</th>
+                <th>Кол-во</th>
+                <th>Стоимость</th>
+                <th>Тип товара</th>
+            </tr>
+        </thead>
+        {% load pagination_tags %}
+        {% autopaginate object_list 10 %}
+        <tbody>
+            {% for object in object_list %}
+                {% for part in object.ps_parts.all %}
+                    <tr>
+                        <td>{{ part.part.article }}</td>
+{#                        <td><a href="{% url 'account_partsdetail' object.slug %}">{{ part.part.article }}</a></td>#}
+                        <td>{{ part.part.title }}</td>
+                        <td>{{ part.count }}</td>
+                        <td>{{ part.price }}</td>
+                        <td>{{ part.get_type_display }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>{% paginate %}
+{% endblock %}

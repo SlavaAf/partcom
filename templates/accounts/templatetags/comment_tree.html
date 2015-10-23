@@ -1,0 +1,17 @@
+{% load comment_tree %}
+<li style="list-style-type: none">
+    <div class="list-group-item panel-body">
+        {% if answer_to.is_public %}
+            <small class="text-warning"> {{ answer_to.user.get_fullname }}: </small>
+                {{ answer_to.text }}<br/>
+            <a class="btn-link btn-comment-reply" data-comment-id="{{ answer_to.pk }}" data-comment-fullname="{{ answer_to.user.get_fullname }}">Ответить</a>
+        {% else %}
+            <small class="alert alert-danger">Данный коментарий не соответствует правилам комментирования нашего сайта</small>
+        {% endif %}
+    </div>
+<ul>
+    {% for child in children %}
+	<li style="list-style-type: none">{% comment_tree child %}</li>
+    {% endfor %}
+</ul>
+</li>

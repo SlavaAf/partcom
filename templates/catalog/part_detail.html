@@ -1,0 +1,60 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Описание {{ object.title }}
+{% endblock %}
+{% block cabinet_content %}
+  <script src="https://www.google.com/jsapi"></script>
+  <script>
+   google.load("visualization", "1", {packages:["corechart"]});
+   google.setOnLoadCallback(drawChart);
+   function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+     ['Статус', 'Объём'],
+     ['Завершенно',     {{ stat_list.part_del_end }}],
+     ['Отказанно', {{ stat_list.part_del_fail }}],
+    ]);
+    var options = {
+{#     title: 'title',#}
+     is3D: true,
+{#     pieResidueSliceLabel: 'Остальное'#}
+    };
+    var chart = new google.visualization.PieChart(document.getElementById('air'));
+     chart.draw(data, options);
+   }
+  </script>
+    <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2 class="text-center">Товар "{{ object_list.part.title }}"</h2>
+        <br/>
+    <table class="table table-hover table-bordered">
+    <tbody>
+    <tr>
+        <th>Артикул:</th>
+        <td class="text-right">{{ object_list.part.article }}</td>
+    </tr>
+    <tr>
+        <th>Количество:</th>
+        <td class="text-right">{{ object_list.count }}</td>
+    </tr>
+    <tr>
+        <th>Стоимость:</th>
+        <td class="text-right">{{ object_list.price }} тенге</td>
+    </tr>
+    <tr>
+        <th>Тип:</th>
+        <td class="text-right">{{ object_list.get_type_display }}</td>
+    </tr>
+    <tr>
+        <th>Статистика магазина:</th>
+        <td><div id="air" style="width: 370px; height: 100%;"></div></td>
+    </tr>
+    </tbody>
+    </table>
+        <div class="text-right">
+<button type="button" id="loading-example-btn" class="btn btn-primary preload" onclick="add_cart_json(this, {{ object_list.pk }});">
+           Добавить в корзину
+</button>
+            </div>
+    </div>
+    </div>
+{% endblock %}

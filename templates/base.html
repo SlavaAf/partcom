@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        {% block title %}
+            PartCom
+        {% endblock %}
+        | Каталог автозапчастей PartCom
+    </title>
+
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/_s.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/_d.css" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ STATIC_URL }}/img/center.png" type="image/png">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="{{ STATIC_URL }}js/tests/vendor/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}js/_app.js?v=1"></script>
+    <script src="{{ STATIC_URL }}ckeditor/ckeditor/ckeditor.js" charset="utf-8"></script>
+  {% block extra_head %}
+
+  {% endblock %}
+  </head>
+  <body onload="badge_json()">
+    {% if messages %}
+      {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} message-alert alert-dismissible messages" style="display: none; margin-left: 25%;" role="alert">
+          <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          {{ message }}
+          </div>
+      {% endfor %}
+    {% endif %}
+
+  <div class="navbar navbar-default navbar-fixed-top navbar-static-top" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'index' %}">ПартКом</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        {% url 'index' as url_account_index %}
+        {% include 'includes/_menu_link.html' with url=url_account_index title='Главная'%}
+        {% if user.is_anonymous %}
+            {% url 'catalog_part' as url_account_index %}
+            {% include 'includes/_menu_link.html' with url=url_account_index title='Каталог'%}
+        {% endif %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Сотрудничество <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Продавцам</a></li>
+            <li><a href="#">Покупателям</a></li>
+          </ul>
+        </li>
+        {% url 'blogs_list' as url_account_index %}
+        {% include 'includes/_menu_link.html' with url=url_account_index title='Блог'%}
+      </ul>
+      <form class="navbar-form navbar-left" role="search" action="{% url 'search_by_article' %}" method="post">{% csrf_token %}
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Артикул запчасти" name="article">
+        </div>
+        <button type="submit" class="btn btn-default">Искать по артикулу</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        {% url 'show_cart' as url_account_index %}
+        {% include 'includes/_menu_link.html' with url=url_account_index title='Корзина <span class="badge-white" id="badge_cart"></span>'%}
+        {% if not user.is_anonymous %}
+            <li class=""><a href="{% url 'account_index' %}">Личный кабинет</a> </li>
+        {% endif %}
+        <li class="dropdown">
+          {% if user.is_anonymous %}
+              <a href="{% url 'account_auth' %}" class="active">Вход/Регистрация</a>
+          {% else %}
+              <a href="{% url 'logout' %}" class="active" >Выход</a>
+          {% endif %}
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+  </div>
+
+  <div class="container">
+      <div class="col-md-11 col-md-offset-1 content">
+        {% block content %}
+        {% endblock %}
+      </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+        <div class="row col-md-11 col-md-offset-1">
+            <div class="col-md-4" style="color: #ffffff">
+                <h4>Кабинет</h4>
+                <ul class="list-unstyled">
+                    <li><a class="a_col" href="{% url 'account_index' %}">Личный кабинет</a></li>
+                    <li><a class="a_col" href="{% url 'account_dialogs' %}">Диалоги</a></li>
+                    <li><a class="a_col" href="{% url 'public_chat' %}">Общий чат</a></li>
+                    <li><a class="a_col" href="{% url 'account_delivery' %}">Мои заказы</a></li>
+{#                    <li><a class="a_col" href="{% url 'blog_list' request.user.profile.pk %}">Мой блог</a></li>#}
+                </ul>
+            </div>
+            <div class="col-md-4" style="color: #ffffff">
+                <h4>Оригинальные каталоги</h4>
+                <ul class="list-unstyled">
+                    <li><a class="a_col" href="#">Toyota</a></li>
+                    <li><a class="a_col" href="#">Mazda</a></li>
+                    <li><a class="a_col" href="#">Mitsubishi</a></li>
+                    <li><a class="a_col" href="#">BMW</a></li>
+                    <li><a class="a_col" href="#">Honda</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4" style="color: #ffffff">
+                <h4>PartCom</h4>
+                <ul class="list-unstyled">
+                    <li><a class="a_col" href="#">О нас</a></li>
+                    <li><a class="a_col" href="#">Сотрудничество</a></li>
+                    <li><a class="a_col" href="#">Контакты</a></li>
+                    <li><a class="a_col" href="#">Связаться с нами</a></li>
+                    <li><a class="a_col" href="{% url 'search_by_article' %}">Поиск по артикулу</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="mini-foot modal-footer">
+        <div class="container" STYLE="color: #ffffff">
+            Copyright © 2014 PartCom. Сделано в <a class="a_col" href="http://sitio.kz">SitIO</a>
+        </div>
+    </div>
+  </footer>
+
+  </body>
+</html>
+
+
+

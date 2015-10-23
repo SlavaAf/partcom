@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript">
+            function do_connection(){
+                if (!!window.EventSource) {
+                    var source = new EventSource('http://'+window.location.host+'/sse/');
+                } else {
+
+                }
+                source.addEventListener('send_message', function(e){
+                    var data = JSON.parse(e.data);
+                    alert(data);
+                    $("#greeting").html("<div>" + data + "</div>")
+                }, false);
+            }
+            $(window).load(function(){
+               do_connection();
+            });
+
+        </script>
+</head>
+<body>
+ <h2>Events emited by server</h2>
+<div id="greeting">
+        </div>
+</body>
+</html>

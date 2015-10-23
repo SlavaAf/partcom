@@ -1,0 +1,46 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Блог
+{% endblock %}
+{% block cabinet_content %}
+    {% if request.user.is_active and author == request.user.profile %}
+{#        <h3 class="text-center">Мой блог</h3>#}
+        <div class="col-md-3 pull-right">
+            <h4><a href="{% url 'new_post' 0 %}" class="btn-success btn">+ Добавить пост</a></h4>
+        </div>
+        <div class="col-md-9 list-group">
+            {% else %}
+                <h3 class="text-center">
+                    {{ author.get_fullname }}
+                Блог</h3>
+            {% endif %}
+{% load pagination_tags %}
+{% autopaginate object_list 20 %}
+            {% for post in object_list %}
+                <div class="list-group-item {% if post.is_public == False %} alert-warning {% endif %}">
+                {% if post.is_public == False %} Не опубликован! {% endif %}
+                    <p class="text-right">
+                        <small class="text-danger">[{{ post.ts_created }}]</small>
+                        <a href="{% url 'user_blog' post.author.pk %}">
+                            {{ post.author.get_fullname }}
+                        </a>
+                    </p>
+                    <h4><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h4>
+                    <p>{{ post.content|safe|truncatewords_html:20 }}</p>
+                </div>
+            {% empty %}
+                {% if request.user.is_active %}
+                    <div class="alert alert-info text-center">
+                        <p>У Вас есть возможность публиковать посты на различные тематики, нажав кнопку
+                            <a href="{% url 'new_post' 0 %}" class="btn-link h4">+ Добавить пост</a></p>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info text-center">
+                            <p>В данный момент нет опубликованных постов. Вы можете получить возможность публиковать собственные посты, для этого Вам необходимо
+                            <a href="{% url 'account_auth' %}">авторизоваться</a>.</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+    {% paginate %}
+</div> <!-- container -->
+{% endblock %}

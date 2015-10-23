@@ -1,0 +1,141 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Чат
+{% endblock %}
+{% block cabinet_content %}
+    <script type="text/javascript">
+            function do_connection(){
+                if (!!window.EventSource) {
+                    var source = new EventSource('http://'+window.location.host+'/sse/{{ channel }}');
+                } else {
+
+                }
+                source.addEventListener('send_message', function(e){
+                    var data = JSON.parse(e.data);
+                    var div = document.getElementById('greeting');
+                    var div_id = Math.floor((Math.random() * 10000) + 1);
+                    div.innerHTML += ("<div class='list-group-item' " + "id=append_message" + div_id + ">" + "</div>");
+                    $('<small>', {
+                        class: "text-warning",
+                        text: data.time + " "
+                    }).appendTo($("#append_message"+div_id));
+                    $('<a>', {
+                        class: "text-info",
+                        href: "/account/chat_control/"+data.u_pk,
+                        text: data.user
+                    }).appendTo($("#append_message"+div_id));
+                    $('<div>').html(linkify(data.text)).appendTo($("#append_message"+div_id));
+                    $.ajax({
+                        type: "get",
+                        url:"/account/get_message/{{ pk }}",
+                        success: function(data){
+                            div_bottom('greeting')
+                        },
+                        error: function(){
+                            alert('error');
+                        }
+                    })
+                }, false);
+            }
+
+            function send_chat_message(button, text){
+                $(button).button;
+                $.ajax({
+                    type: "GET",
+                    url: "/account/chat/{{ pk }}",
+                    data: {text: text},
+                    success: function(data){
+                        $('#text').val("");
+                    },
+                    error: function(data){
+                        alert('error');
+                    }
+                })
+                event.preventDefault();
+            };
+
+            function get_last_message(){
+                $.ajax({
+                    type: "get",
+                    url:"/account/get_message/{{ pk }}",
+                    success: function(data){
+                        $.each(data.messages, function(index, value){
+                            var div = document.getElementById('greeting');
+                            div.innerHTML += ("<div class='list-group-item' " + "id=message" + index  + ">" + "</div>");
+                            $('<small>', {
+                                class: "text-warning",
+                                text: value.time + " "
+                            }).appendTo($("#message"+index));
+                            $('<a>', {
+                                class: "text-info",
+                                href: "/account/chat_control/"+value.u_pk,
+                                text: value.user
+                            }).appendTo($("#message"+index));
+                            $('<div>').html(linkify(value.text)).appendTo($("#message"+index));
+                        });
+                        div_bottom('greeting')
+                    },
+                    error: function(){
+                        alert('error');
+                    }
+                })
+                event.preventDefault();
+            }
+
+            $(document).ready(function(){
+               do_connection();
+               get_last_message();
+            });
+        </script>
+<div class="container-fluid">
+    <div class="row">
+        {% if chat.users.all %}
+            {% if chat.title %}
+                <h4 id="chat_title" class="text-center" title="Вы можете задать тему диалога">
+                    {{ chat.title }}
+            {% else %}
+                <h4 id="chat_title" class="text-center" title="Вы можете задать тему диалога">
+                    {% for object_user in chat.users.all %}{% if object_user.user != user %}{% if forloop.counter0 > 0 %}{% if forloop.counter0 == 1 and chat.users.all.0.user == user %}{% else %}, {% endif %}{% endif %}
+                                {{ object_user.get_fullname }}{% endif %}{% endfor %}
+            {% endif %}
+            <a class="btn btn-xs" data-toggle="modal" data-target="#myModal" title="Задать тему диалога">
+                <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+                </h4>
+        <div class="col-md-9">
+        {% else %}
+            <h3 class="text-center">Общий чат</h3><br/>
+        {% endif %}
+
+            <div id="greeting" class="list-group" style="height: 300px; width: 100%; max-width: 100%; overflow-y: scroll; overflow-wrap: break-word">
+            </div>
+            <form action="{% url 'chat' pk %}">
+                <textarea  class="form-control" placeholder="Введите Ваше сообщение" name="test" id="text" rows="3" onkeypress="if(event.keyCode==13 && value!='')send.click();"></textarea>
+                <input id="send" type="submit" class="btn btn-primary" onclick="send_chat_message(this, $('#text').val());"
+                        style="margin-top: 10px">
+            </form>
+        <div class="modal fade" id="myModal">
+              <div class="modal-dialog modal-sm modal-body modal-content">
+                  <form action="{% url 'set_chat_title' pk %}">
+                      <input id="chat_title" type="text" class="form-control" name="data" autocomplete="off" placeholder="Тема диалога" autofocus> <br/>
+                      <input type="submit" class="btn btn btn-primary" value="Изменить">
+                      <button type="button" class="btn btn-primary pull-right" data-dismiss="modal">Отмена</button>
+                  </form>
+              </div>
+        </div>
+        </div>
+            {% if chat.users.all %}
+            <div class="col-md-3">
+                <form>
+                    Добавить собеседника <br/>
+                    <div class="input-group">
+                        <input type="text" class="form-control" autocomplete="off" placeholder="Имя Фамилия" id="user_search" oninput="get_user(this, {{ pk }})">
+                    </div>
+                    <div id="search_list_user">
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+    </div>
+</div>
+{% endblock %}

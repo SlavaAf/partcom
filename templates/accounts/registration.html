@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% block title %}
+Регистрация
+{% endblock %}
+{% block content %}
+    <br/><br/><br/><br/>
+    <h2 class="text-center">Регистрация</h2>
+    <div class="alert alert-warning">
+        <p>Вам необходимо зарегистрироваться! Пожалуйста заполните необходимые данные. Только после регистрации Вам будет отправлено SMS-сообщение с кодом для подтверждения входа.</p>
+    </div>
+    <form action="" method="post" class="col-md-6 col-md-offset-3 form-vertical" role="form">{% csrf_token %}
+        {% csrf_token %}
+        {% bootstrap_form form layout='vertical' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary">
+                Зарегистрироваться
+            </button>
+        {% endbuttons %}
+    </form>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'accounts/base.html' %}
+{% load comment_tree %}
+{% block title %}
+Блог
+{% endblock %}
+{% block cabinet_content %}
+    <div class="">
+        <p class="text-right text-danger">{{ post.ts_created }}<br/>
+        <a href="{% url 'user_blog' post.author.pk %}">
+            {{ post.author.get_fullname }}
+        </a></p>
+    </div> <!-- container -->
+    <div class="list-group-item" id="post_content">
+    {% if post.author == request.user.profile %}
+    <a class="btn btn-xs pull-right" title="Удалить пост" data-toggle="modal" data-target="#myModal">
+                <span class="glyphicon glyphicon-remove"></span>
+                </a>
+    <a class="btn btn-xs pull-right" title="Редактировать пост" href="{% url 'post_event' post.pk 'edit'%}">
+                <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+{% if post.is_public %}
+    <a class="btn btn-xs pull-right" title="Снять с публикации" href="{% url 'post_event' post.pk 'unpublished'%}">
+                <span class="glyphicon glyphicon-share-alt"></span>
+                </a>
+{% else %}
+    <a class="btn btn-xs pull-right" title="Опубликовать" href="{% url 'post_event' post.pk 'public'%}">
+            <span class="glyphicon glyphicon-ok"></span>
+            </a>
+    <div class="alert alert-warning">
+        <p>Данный пост не могут просматривать другие пользователи. Для того, чтобы опубликовать его нажмите галочку.</p>
+    </div>
+{% endif %}
+        <div class="modal fade" id="myModal">
+            <div class="modal-content modal-body modal-dialog modal-sm">
+                  <form action="{% url 'post_event' post.pk 'delete'%}">
+                      <label>Вы уверены, что хотите удалить этот пост?</label>
+                      <input type="submit" class="btn btn-primary" value="Да">
+                      <button type="button" class="btn btn-primary pull-right" data-dismiss="modal">Нет</button>
+                  </form>
+            </div>
+        </div>
+    {% endif %}
+        <br/>
+    <h4 class="text-center">{{ post.title }}</h4>
+    {{ post.content|safe|urlizetrunc:15}}
+    </div>
+    {% if request.user.is_active %}
+
+    <ul style="margin-left: 0; padding-left: 0">
+    {% for answer_to in comments %}
+	<li style="list-style-type: none">{% comment_tree answer_to %}</li>
+    {% endfor %}
+    </ul>
+        <form action="{% url 'posts_detail' post.author.pk post.slug %}">
+            <p style="display: none" id="comment_reply_to_p">Ответ для пользователя: <small class="text-warning" id="comment_reply_to_fullname"></small></p>
+            <input type="hidden" id="comment_reply_to" name="comment_pk" value=""/>
+            <textarea  class="form-control" placeholder="Введите Ваш комментарий" name="comment_text" rows="3"></textarea>
+            <input type="submit" class="btn btn-primary" value="Отправить" style="margin-top: 10px">
+        </form>
+    {% else %}
+        <div class="alert alert-warning">
+            <p>Чтобы получить возможность публикации собственных постов и коментирования Вам необходимо
+                <a href="{% url 'account_auth' %}">авторизоваться</a>.
+            </p>
+        </div>
+    {% endif %}
+    <br/>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'accounts/base.html' %}
+{% load bootstrap3 %}
+{% block title %}
+Редактирование личных данных
+{% endblock %}
+{% block cabinet_content %}
+    <ul class="nav nav-tabs ">
+        {% url 'edit_data' 'main' as url_account_index %}
+        {% include 'includes/_menu_link.html' with url=url_account_index title='Личные данные'  %}
+
+        {% url 'edit_data' 'contact' as url_account_index %}
+        {% include 'includes/_menu_link.html' with url=url_account_index title='Адреса'  %}
+    {% if request.user.profile.shop.all %}
+        {% url 'edit_data' 'personal' as url_account_index %}
+        {% include 'includes/_menu_link.html' with url=url_account_index title='Данные магазина'  %}
+    {% endif %}
+    </ul>
+    <br/>
+    {% if form %}
+        <form method="post" role="form">
+            {% csrf_token %}
+            {% bootstrap_form form layout='vertical' %}
+                {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                     Сохранить
+                </button>
+            {% endbuttons %}
+        </form>
+    {% else %}
+        {% for address in addresses %}
+            <p>{{ address.country }}, {{ address.region }}, {{ address.city }}, {{ address.address }}, тел: {{ address.phones }}
+                <a href="{% url 'edit_address' address.pk %}"><span class="glyphicon glyphicon-pencil" title="Редактировать"></span></a>
+                <a href="{% url 'delete_address' address.pk %}"><span class="glyphicon glyphicon-remove" title="Удалить"></span></a></p>
+        {% endfor %}<br/>
+        <a href="{% url 'edit_address' 0 %}">Добавить адресс</a>
+    {% endif %}
+{% endblock %}

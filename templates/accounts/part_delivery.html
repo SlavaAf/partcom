@@ -1,0 +1,91 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Просмотр запчастей в заказах
+{% endblock %}
+{% block cabinet_content %}
+{% if order_list %}
+<h3 class="text-center">Список заказаных у вас запчастей</h3><br/>
+    <div class="right panel panel-danger">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Артикул</th>
+                    <th>Наименование</th>
+                    <th>Кол-во</th>
+                    <th>Статус</th>
+                    <th>Статус заказа</th>
+                </tr>
+            </thead>
+{% load pagination_tags %}
+{% autopaginate order_list 20 %}
+            <tbody>
+                {% for order in order_list %}
+                    {% if order.part_del.state != 'ts_ended' %}
+                        <tr>
+                            <td>{{ order.part_in_shop.part.article }}</td>
+                            <td>{{ order.part_in_shop.part.title }}</td>
+                            <td>{{ order }}</td>
+                            <td>
+                                {% if order.state_in_part == 'pd_ship' %}
+                                    <b class="text-info">Готово к отправке</b>
+                                {% elif order.state_in_part == 'pd_fail' %}
+                                    <b class="text-danger">Отсутствует</b>
+                                {% else %}
+                                <form action="{% url 'part_delivery' %}" method="post">{% csrf_token %}
+                                    <button type="submit" class="btn btn-default btn-xs btn-info" name="ok"
+                                            value="{{ order.id }}" title="Потверждение смены статуса">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                    <input type="checkbox" title="Нажмите для сообщения о готовности отправки детали">
+                                    <button type="submit" class="btn btn-default btn-xs btn-danger" name="fail"
+                                            value="{{ order.id }}" title="Потверждение смены статуса">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                            <td>{{ order.part_del.get_state_display }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <a data-toggle="collapse" data-parent="#accordion" href="#a6" class="panel-warning ">
+            <div class="panel-heading">
+                  <h4 class="">
+                        <b>Проданные запчасти в количестве: {{ end_part }} шт.</b>
+                  </h4>
+            </div>
+        </a>
+            <div id="a6" class="panel-collapse collapsing">
+                <div class="panel-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Артикул</th>
+                                <th>Наименование</th>
+                                <th>Кол-во</th>
+                                <th>Статус заказа</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in order_list %}
+                                {% if order.part_del.state == 'ts_ended' %}
+                                    <tr>
+                                        <td>{{ order.part_in_shop.part.article }}</td>
+                                        <td>{{ order.part_in_shop.part.title }}</td>
+                                        <td>{{ order }}</td>
+                                        <td>{{ order.part_del.get_state_display }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+              </div>
+        </div>
+    </div>{% paginate %}
+{% else %}
+    У вас запчасти еще не покупали
+{% endif %}
+<br/>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% block title %}
+Потверждение данных
+{% endblock %}
+{% block content %}
+<br/><br/><br/><br/>
+<form method="POST" name="RadioShippingForm" action="">
+<div class="col-lg-12 row">
+    <div class="panel panel-warning">
+        <div class="panel-heading">
+            <h4>Выбор данных для заказа</h4>
+        </div>
+        <div class="panel-body">
+            <div class="col-md-6">
+            {% csrf_token %}
+            {% bootstrap_form ShippingForm %}
+            </div>
+            <div class="col-md-6">
+                {% csrf_token %}
+                {% bootstrap_form PaymentForm %}
+            </div>
+    <div class="col-md-12">
+    <div class="" id="adr" style="display:block" >
+    <div class="center-block"><h5>Выберите адресс, либо создайте новый</h5></div>
+        <div class="list-group">
+            {% for object in object_list %}
+                <a class="list-group-item col-xs-6" style="margin-bottom: 10px; height: 130px">
+                    {{ object.get_city_display }},
+                    {{ object.address }}<br/>
+                    Почтовый индекс: {{ object.address_index }}<br/>
+                    {% if object.details %}Примечание: {{ object.details }}{% endif %}
+                    {% buttons %}
+                        <button type="submit" class="btn bottom" name="checkout_btn_{{ object.id }}" style="">Продолжить</button>
+                    {% endbuttons %}
+                </a>
+            {% endfor %}
+        </div>
+            <div class="panel-group col-md-10 row">
+              <div class="panel success">
+                  <h4 class="panel-warning">
+{#                    <a data-toggle="collapse" data-parent="#accordion" href="#bottom">#}
+                        Добавить новый адрес
+{#                    </a>#}
+                  </h4>
+                <div id="bottom" class="panel-collapse">
+                  <div class="panel-body">
+                    {% csrf_token %}
+                    {% bootstrap_form AddresShipForm layout='panel' %}
+                    {% buttons %}
+                        <button type="submit" class="btn" name="checkout_btn_new" >Продолжить</button>
+                    {% endbuttons %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+    {% csrf_token %}
+    {% buttons %}
+        <button type="submit" class="btn btn-danger center-block" name="checkout_btn" id="bbb">Продолжить</button>
+    {% endbuttons %}
+</div>
+</form>
+{% endblock %}

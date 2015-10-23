@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block extra_head %}
+    <script src="{{ STATIC_URL }}js/cabinet.js?v=2"></script>
+{% endblock %}
+{% block content %}
+    <br/><br/><br/><br/>
+    {% if not user.is_anonymous %}
+    <div class="col-md-2">
+    <body id="body1" onload="badge_json()">
+        <ul class="nav nav-pills nav-stacked">
+            {% url 'account_index' as url_account_index %}
+{#            {% include 'includes/_menu_link.html' with url=url_account_index title='Главная'  %}#}
+            <li {% if url_account_index == request.path or 'edit_data' in request.path %}class="active"{% endif %}><a href="{% url 'account_index'%}">Главная</a></li>
+
+            {% if user.profile.shop.get %}
+                {% url 'account_parts' as url_account_index %}
+                {% include 'includes/_menu_link.html' with url=url_account_index title='Мои запчасти'  %}
+
+                {% url 'part_delivery' as url_account_index %}
+                {% include 'includes/_menu_link.html' with url=url_account_index title='Заказанные запчасти'  %}
+            {% endif %}
+
+            {% url 'account_delivery' as url_account_index %}
+{#            {% include 'includes/_menu_link.html' with url=url_account_index title='Мои заказы'  %}#}
+            <li {% if url_account_index == request.path or url_account_index in request.path %}class="active"{% endif %}><a href="{% url 'account_delivery'%}">Мои заказы</a></li>
+
+            {% url 'catalog_part' as url_account_index %}
+            {% include 'includes/_menu_link.html' with url=url_account_index title='Каталог'  %}
+
+            {% url 'account_dialogs' as url_account_index %}
+{#            {% include 'includes/_menu_link.html' with url=url_account_index title='Диалоги <span class="badge" id="badge_message"></span>'  %}#}
+            <li {% if url_account_index in request.path or 'chat' in request.path and not 'chat/1' in request.path %}class="active"{% endif %}><a href="{% url 'account_dialogs'%}">Диалоги<span class="badge" id="badge_message"></span></a></li>
+
+            <li {% if 'chat/1' in request.path %}class="active"{% endif %}><a href="{% url 'public_chat'%}">Общий чат</a></li>
+
+            {% url 'blog_list' request.user.profile.pk as url_account_index %}
+            {% include 'includes/_menu_link.html' with url=url_account_index title='Мой блог'  %}
+
+{#            {% url 'show_cart' as url_account_index %}#}
+{#            {% include 'includes/_menu_link.html' with url=url_account_index title='Корзина <span class="badge pull-right" id="badge_cart"></span>'%}#}
+        </ul>
+    </body>
+    </div>
+    {% endif %}
+    {% if not user.is_anonymous %}
+        <div class="col-md-10">
+    {% else %}
+        <div class="col-md-12">
+    {% endif %}
+        {% block cabinet_content %}
+        {% endblock %}
+    </div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Личный кабинет
+{% endblock %}
+{% block cabinet_content %}
+  <script src="https://www.google.com/jsapi"></script>
+  <script>
+   google.load("visualization", "1", {packages:["corechart"]});
+   google.setOnLoadCallback(drawChart);
+   function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+     ['Статус', 'Объём'],
+     ['Завершенно',     {{ status_list.part_del_end }}],
+     ['Отказанно', {{ status_list.part_del_fail }}],
+    ]);
+    var options = {
+{#     title: 'title',#}
+     is3D: true,
+{#     pieResidueSliceLabel: 'Остальное'#}
+    };
+    var chart = new google.visualization.PieChart(document.getElementById('air'));
+     chart.draw(data, options);
+   }
+  </script>
+{% if request.user.profile.shop.get %}
+    <h2 align="center">Статистика магазина
+        <p class="text-center"><strong>"{{ request.user.profile.shop.first.title }}"</strong>
+            <a href="{% url 'edit_data' 'main' %}" title="Редактировать личные данные" class="btn">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+        </p>
+    </h2>
+{% else %}
+    <h2 align="center">Статистика пользователя
+        <p class="text-center"><strong>{{ user.get_full_name }}</strong>
+            <a href="{% url 'edit_data' 'main' %}" title="Редактировать личные данные" class="btn">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+        </p>
+    </h2>
+{% endif %}
+{% if request.user.profile.dd_client.all %}
+        <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+    <table class="table table-hover table-bordered">
+    <tbody><form method="post" action="{% url 'account_delivery' %}">{% csrf_token %}
+    <tr>
+        <th>Заказов:</th>
+        <td class="text-center">
+            <a href="{% url 'account_delivery' %}" class="btn btn-xs btn-link">
+                {{ status_list.vsg }}
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <th>Созданные:</th>
+        <td class="text-center">
+            <button class="btn btn-xs btn-link" type="submit" name="ts_created" id="ts_created" {% if status_list.created == 0 %}disabled{% endif %}>
+                {{ status_list.created }}
+            </button>
+        </td>
+    </tr>
+    <tr>
+        <th>В обработке:</th>
+        <td class="text-center">
+            <button class="btn btn-xs btn-link" type="submit" name="ts_accept" id="ts_accept" {% if status_list.accept == 0 %}disabled{% endif %}>
+                {{ status_list.accept }}
+            </button>
+        </td>
+    </tr>
+    <tr>
+        <th>Оплачено:</th>
+        <td class="text-center">
+            <button class="btn btn-xs btn-link" type="submit" name="ts_buy" id="ts_buy" {% if status_list.buy == 0 %}disabled{% endif %}>
+                {{ status_list.buy }}
+            </button>
+        </td>
+    </tr>
+    <tr>
+        <th>Завершено:</th>
+        <td class="text-center">
+            <button class="btn btn-xs btn-link" type="submit" name="ts_ended" id="ts_ended" {% if status_list.ended == 0 %}disabled{% endif %}>
+                {{ status_list.ended }}
+            </button>
+        </td>
+    </tr></form>
+    {% if request.user.profile.shop.get %}
+        <tr>
+            <th>Запчастей в заказах:</th>
+            <td class="text-center">
+                <a href="{% url 'part_delivery' %}" class="btn btn-xs btn-link">
+                    {{ status_list.part_del }}
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <th>Запчастей продано:</th>
+            <td class="text-center">
+                    {{ status_list.part_del_end }}
+            </td>
+        </tr>
+        <tr>
+            <th>Готовых к отправке:</th>
+            <td class="text-center">
+                    {{ status_list.part_del_ship }}
+            </td>
+        </tr>
+        <tr>
+            <th>Отказано:</th>
+            <td class="text-center">
+                    {{ status_list.part_del_fail }}
+            </td>
+        </tr>
+        <tr>
+            <th><div id="air" style="width: 100%; height: 200px;"></div></th>
+        </tr>
+    {% endif %}
+    </tbody>
+    </table>
+
+    </div>
+    </div>
+{% else %}
+        <div class="alert alert-info" role="alert">
+        Ваш личный кабинет пуст!<br/>
+            Чтобы изменить его состояние, надо начать активно пользоваться интернет-магазином, т.е.
+            оформлять заказы. <br/>
+            Если Вы представитель магазина запчастей, то необходимо выставлять запчасти на продажу.<br/>
+        </div>
+{% endif %}
+<br/>
+{% endblock %}

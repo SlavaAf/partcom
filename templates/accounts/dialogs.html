@@ -1,0 +1,43 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Диалоги
+{% endblock %}
+{% block cabinet_content %}
+<div class="col-md-12">
+        <h3 class="text-center">Диалоги</h3><br/>
+<div class="col-md-4 pull-right">
+    <form>
+        Поиск собеседников <br/>
+        <div class="input-group">
+            <input type="text" class="form-control" autocomplete="off" placeholder="Имя Фамилия" id="user_search" oninput="get_user(this, 0)">
+        </div>
+        <div id="search_list_user">
+        </div>
+    </form>
+</div>
+    <div class="col-md-8">
+    {% if object_list %}
+        {% load pagination_tags %}
+        {% autopaginate object_list 10 %}
+        {% for object in object_list %}
+            {% if object.title %}
+                <a href="{% url 'chat' object.pk %}" class="list-group-item list-group-item-warning">
+                    {{ object.title }}<span class="badge" id="{{ object.pk }}"></span>
+                </a><br/>
+            {% else %}
+                <a href="{% url 'chat' object.pk %}" class="list-group-item list-group-item-warning">
+                    {% for object_user in object.users.all %}{% if object_user.user != user %}{% if forloop.counter0 > 0 %}{% if forloop.counter0 == 1 and object.users.all.0.user == user %}{% else %}, {% endif %}{% endif %}
+                                {{ object_user.get_fullname }}{% endif %}{% endfor %}
+                <span class="badge" id="{{ object.pk }}"></span></a><br/>
+            {% endif %}
+        {% endfor %}{% paginate %}
+    {% else %}
+    <div class="alert alert-info text-center">
+        <p>Здесь будут размещаться Ваши диалоги. Чтобы завести диалог, воспользуйтесь поиском собеседников.</p>
+    </div>
+    {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

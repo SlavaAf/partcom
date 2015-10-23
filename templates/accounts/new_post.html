@@ -1,0 +1,23 @@
+{% extends 'accounts/base.html' %}
+{% load bootstrap3 %}
+{% block title %}
+Новый пост
+{% endblock %}
+{% block cabinet_content %}
+    <script src="{{ STATIC_URL }}ckeditor/ckeditor/ckeditor.js" type="text/javascript"></script>
+    <h4 class="text-center">{% if slug == '0' %} Новый пост {% else %} Редактирование поста {% endif %}</h4>
+        <p class="text-right">
+            <small class="text-info">
+                {{ user.profile.get_fullname }}
+            </small>
+        </p>
+    <form action="" method="post" class="form-vertical" role="form">{% csrf_token %}
+        {% csrf_token %}
+        {% bootstrap_form form layout='vertical' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary">
+            {% if slug == '0' %} Создать {% else %} Сохранить изменения {% endif %}
+            </button>
+        {% endbuttons %}
+    </form>
+{% endblock %}

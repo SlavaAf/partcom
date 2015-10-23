@@ -1,0 +1,79 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Моя корзина
+{% endblock %}
+{% block cabinet_content %}
+{% if object_list %}
+<body id="delete">
+<div class="panel panel-danger">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Артикул</th>
+                <th>Наименование</th>
+                <th>Колличество</th>
+                <th>Цена за единицу</th>
+                <th>Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in object_list %}
+                <tr id="cart_part_{{ object.id }}">
+                    <td>{{ object.article }}</td>
+                    <td>{{ object.title }}</td>
+                    <td>
+                        <a type="btn" onclick="plus_cart_json(this, {{ object.id }});" title="Увеличить колличество товара">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <span id="cart_count_{{ object.id }}" >
+                            {{ object.count }}
+                        </span>
+                        <a type="btn" onclick="minus_cart_json(this, {{ object.id }});" title="Уменьшить колличество товара">
+                            <span class="glyphicon glyphicon-minus"></span>
+                        </a>
+                        <strong>
+                            <span id="base_count_{{ object.id }}" class="pull-right">
+                            </span>
+                        </strong>
+                    </td>
+                    <td>
+                        <span id="cost_{{ object.id }}">
+                            {{ object.cost }}
+                        </span>
+                        тг.
+                        <strong>
+                            <a id="btn_{{ object.id }}" type="btn" class="text-success pull-right" onclick="validation_cart(this, 'ok', {{ object.id }})"
+                               title="Принять новую стоимость" style="display: none;">
+                                <span id="btn_{{ object.id }}" class="glyphicon glyphicon-ok"></span>
+                            </a>
+                            <span id="base_cost_{{ object.id }}" class="pull-right" style="display: none">
+                            </span>
+                        </strong>
+                    </td>
+                    <td>
+                        <span id="cart_price_{{ object.id }}">
+                            {{ object.price }}
+                        </span>
+                        тг.
+                    </td>
+                    <td>
+                        <a type="btn" class="text-danger" onclick="delete_cart_json(this, {{ object.id }}); badge_json();" title="Удалить данный товар из корзины">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <h4>К оплате всего: <b><span id="cart_amount">{{ amount_list }} тг.</span></b></h4>
+    <br/>
+    <a id="start" type="btn" class="btn btn-success" onclick="validation_cart(this, 'fail')">Оформить заказ</a>
+</body>
+{% else %}
+    <h3>Корзина пуста</h3><br/>
+        <div class="alert alert-info" role="alert">
+        Для того, чтобы добавить товар в корзину, <a href="{% url 'search_by_article' %}" class="alert-link">воспользуйтесь поиском по артикулу.</a>
+        </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Мои заказы
+{% endblock %}
+{% block cabinet_content %}
+    {% if object_list %}
+        {% load pagination_tags %}
+        {% autopaginate object_list 7 %}
+        {% for object in object_list %}
+            <div class="panel-group" id="accordion">
+              <div class="panel {% if object.state == 'ts_created' %}panel-warning
+                                {% elif object.state == 'ts_accept'%}panel-danger
+                                {% elif object.state == 'ts_buy'%}panel-success
+                                {% else %}panel-default{% endif %}">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#{{ object.id }}" class="btn">
+                        <div class="text-left">
+                            <b>Номер заказа:</b> {{ object.id }}<br/>
+                            <b>Статус заказа:</b> {{ object.get_state_display }}<br/>
+                            <b>Сумма заказа:</b> {{ object.amount }}
+                        </div>
+                    </a>
+                </div>
+                <div id="{{ object.id }}" class="panel-collapse collapsing">
+                  <div class="panel-body">
+                    <table class="table table-striped">
+                    <thead>
+                                <tr>
+                                    <th>Артикул</th>
+                                    <th>Наименование</th>
+                                    <th>Кол-во</th>
+                                    <th>Стоимость</th>
+                                    <th>Тип</th>
+                                </tr>
+                    </thead>
+                    <tbody>
+                    {% for part in object.parts_in_del.all %}
+
+                                <tr>
+                                    <td><a class="text-warning" href="{% url 'account_order_detail' object.pk %}" data-toggle="tooltip">
+                                            {{ part.part.article }}
+                                        </a>
+                                    </td>
+                                    <td>{{ part.part.title}}</td>
+                                    <td>{{ part.ps_part_in_del.first.quantity}}</td>
+                                    <td>{{ part.price}}</td>
+                                    <td>{{ part.get_type_display}}</td>
+                                </tr>
+
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}{% paginate %}
+        {% else %}
+        <p>У вас отсутствуют заказы.</p>
+        <div class="alert alert-info" role="alert">
+        Для того, чтобы оформить заказ, найдите нужную вам деталь по артикулу и добавьте в корзину.<br/>
+        <a href="{% url 'search_by_article' %}" class="alert-link">Ссылка на поиск</a><br/>
+        <a href="{% url 'catalog_part' %}" class="alert-link">Ссылка на каталог</a>
+        </div>
+    {% endif %}
+{% endblock %}

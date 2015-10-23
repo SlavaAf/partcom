@@ -1,0 +1,48 @@
+{% extends 'accounts/base.html' %}
+{% block title %}
+Каталог товаров
+{% endblock %}
+{% block cabinet_content %}
+<h3 class="text-center">Каталог запчастей</h3>
+    <br/>
+<div class="panel panel-danger">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Артикул</th>
+                <th>Наименование</th>
+                <th>Кол-во</th>
+                <th>Стоимость</th>
+                <th>Тип товара</th>
+            </tr>
+        </thead>
+        <tbody>
+        <form method="post" action="">{% csrf_token %}
+        {% load pagination_tags %}
+        {% autopaginate object_list 11 %}
+            {% for object in object_list %}
+                <tr>
+                    <td>
+                        <button  name="PK" value="{{ object.pk }}" formmethod="post" type="submit" class="text-warning btn-link" formaction="{% url 'catalog_part_detail' object.part.slug %}">
+                            {{ object.part.article }}
+                        </button>
+                        <button class="btn btn-warning btn-xs pull-right" title="Добавить в корзину" onclick="add_to_cart_json(this, {{ object.pk }})">
+                            <span class="glyphicon glyphicon-shopping-cart"/>
+                        </button>
+                    </td>
+                    <td>{{ object.part.title }}</td>
+                    <td>
+                        <span id="obj_count_{{ object.pk }}">
+                            {{ object.count }}
+                        </span>
+                    </td>
+                    <td>{{ object.price }}</td>
+                    <td>{{ object.get_type_display }}</td>
+                </tr>
+            {% endfor %}
+        </form>
+        </tbody>
+    </table>
+    {% paginate %}
+</div>
+{% endblock %}
